@@ -1,0 +1,24 @@
+name: Deploy to GCE VM
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/363568307020/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions-vm-sa@qwiklabs-gcp-00-58f79ec59d89.iam.gserviceaccount.com
+
+      - name: SSH into VM and run commands
+        run: |
+          gcloud compute ssh demo-vm \
+            --zone=asia-south1-a \
+            --command="echo 'Hello from GitHub Actions' && uptime"

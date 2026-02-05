@@ -26,5 +26,5 @@ jobs:
       - name: Test VM access
         run: |
           gcloud compute ssh demo-vm \
-            --zone=asia-south1-a \
+            --zone=us-central1-a \
             --command="echo 'Hello from GitHub Actions' && uptime"

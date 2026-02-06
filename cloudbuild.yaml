@@ -1,24 +1,33 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'us-central1-docker.pkg.dev/$qwiklabs-gcp-02-0a8c2e4cc73c/fastapi-repo/fastapi:latest', '.']
-
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-central1-docker.pkg.dev/$qwiklabs-gcp-02-0a8c2e4cc73c/fastapi-repo/fastapi:latest']
-
-- name: 'gcr.io/cloud-builders/kubectl'
-  env:
-  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-  - 'CLOUDSDK_CONTAINER_CLUSTER=fastapi-cluster'
+# 1. Build Docker image
+- name: gcr.io/cloud-builders/docker
   args:
-  - 'apply'
-  - '-f'
-  - 'deployment.yaml'
+    - build
+    - -t
+    - us-central1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi:latest
+    - .
 
-- name: 'gcr.io/cloud-builders/kubectl'
-  env:
-  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-  - 'CLOUDSDK_CONTAINER_CLUSTER=fastapi-cluster'
+# 2. Push image
+- name: gcr.io/cloud-builders/docker
   args:
-  - 'apply'
-  - '-f'
-  - 'service.yaml'
+    - push
+    - us-central1-docker.pkg.dev/$PROJECT_ID/fastapi-repo/fastapi:latest
+
+# 3. Deploy to GKE
+- name: gcr.io/cloud-builders/kubectl
+  env:
+    - CLOUDSDK_COMPUTE_ZONE=us-central1-a
+    - CLOUDSDK_CONTAINER_CLUSTER=fastapi-cluster
+  args:
+    - apply
+    - -f
+    - deployment.yaml
+
+- name: gcr.io/cloud-builders/kubectl
+  env:
+    - CLOUDSDK_COMPUTE_ZONE=us-central1-a
+    - CLOUDSDK_CONTAINER_CLUSTER=fastapi-cluster
+  args:
+    - apply
+    - -f
+    - service.yaml
